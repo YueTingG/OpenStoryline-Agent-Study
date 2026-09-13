@@ -347,6 +347,110 @@ preview_urls
 
 ---
 
+### 7.1 某次真实剪辑的 MCP 调用顺序
+
+这一节记录的是一次真实剪辑中实际发生的 MCP tool 调用顺序，不解释模型为什么这样选。
+
+真实用户请求：
+
+```text
+基于我上传的这个素材，做一个 5 秒测试视频。不要联网搜素材，不要配音。现在开始。
+```
+
+真实 session：
+
+```text
+e78297ae266440caac2cac2dc5575c51
+```
+
+真实 HTTP trace：
+
+```text
+C:\Users\guoyueting\agent\FireRed-OpenStoryline\outputs\e78297ae266440caac2cac2dc5575c51\debug\llm_http_trace.jsonl
+```
+
+注意：
+
+```text
+下面只列 MCP tool_calls。
+trace 中间还有 VLM/节点内部采样请求，它们的 finish_reason 是 stop，不算 MCP tool 调用。
+```
+
+实际 MCP tool call 顺序：
+
+| 顺序 | HTTP 行 | Tool | Arguments | 对应产物/说明 |
+| --- | --- | --- | --- | --- |
+| 1 | request 1 / response 2 | `storyline_load_media` | `{"mode": "auto"}` | 索引当前 session 的上传素材，生成 `load_media` artifact |
+| 2 | request 3 / response 4 | `storyline_split_shots` | `{"mode": "auto"}` | 基于 `load_media` artifact 生成 `clips`，生成 `split_shots` artifact |
+| 3 | request 5 / response 6 | `storyline_understand_clips` | `{"mode": "auto"}` | 对 clips 做视觉理解，期间会触发 VLM 请求 |
+| 4 | request 15 / response 16 | `storyline_filter_clips` | `{"mode": "auto", "user_request": "这是测试视频，保留全部片段，不要丢弃任何素材。"}` | 筛选/保留片段 |
+| 5 | request 19 / response 20 | `storyline_group_clips` | `{"mode": "auto", "user_request": "按一天的时间顺序排列：早晨咖啡 → 城市漫步 → 日落休闲。"}` | 排序并分组 clips |
+| 6 | request 23 / response 24 | `storyline_generate_script` | `{"mode": "auto", "user_request": "极简 Vlog 风格的短文案，口语、轻松，配合三个章节标题：早晨咖啡、城市漫步、日落休闲。"}` | 生成字幕/文案 |
+| 7 | request 27 / response 28 | `storyline_elementrec_text` | `{"mode": "auto", "user_request": "极简、干净的字体风格，适合 Vlog 标题。"}` | 推荐字幕字体/样式 |
+| 8 | request 31 / response 32 | `storyline_elementrec_transition` | `{"mode": "auto", "duration": 500}` | 推荐转场 |
+| 9 | request 33 / response 34 | `storyline_generate_voiceover` | `{"mode": "skip"}` | 按用户要求跳过配音 |
+| 10 | request 35 / response 36 | `storyline_select_BGM` | `{"mode": "auto", "user_request": "轻松、治愈的 Vlog 背景音乐，节奏舒缓。"}` | 这一步返回了一个大写 BGM 的 tool name |
+| 11 | request 37 / response 38 | `storyline_select_bgm` | `{"mode": "auto", "user_request": "轻松、治愈的 Vlog 背景音乐，节奏舒缓。"}` | 实际 BGM 选择 |
+| 12 | request 41 / response 42 | `storyline_plan_timeline_pro` | `{"mode": "auto"}` | 组织时间线 |
+| 13 | request 43 / response 44 | `storyline_render_video` | `{"mode": "auto"}` | 渲染成片 |
+
+后续阅读顺序可以按这条链路逐个模块看：
+
+```text
+load_media
+-> split_shots
+-> understand_clips
+-> filter_clips
+-> group_clips
+-> generate_script
+-> elementrec_text
+-> elementrec_transition
+-> generate_voiceover
+-> select_bgm
+-> plan_timeline_pro
+-> render_video
+```
+
+---
+
+### 7.2 load_media 详细流程
+
+`load_media` 的完整说明见：
+
+```text
+architecture/load-media-flow.md
+```
+
+核心结论：
+
+```text
+LLM 只返回 storyline_load_media {"mode":"auto"}；
+文件路径不由 LLM 传入；
+后端通过 session_id 定位 media_dir；
+load_media 前置拦截器扫描该 session 的全部素材文件；
+load_media 节点把文件索引成 media_0001 / media_0002 / media_0003。
+```
+
+---
+
+### 7.3 split_shots 详细流程
+
+`split_shots` 的完整说明见：
+
+```text
+architecture/split-shots-flow.md
+```
+
+核心结论：
+
+```text
+TransNetV2 负责判断哪里应该切；
+ffmpeg 负责按切点真正切出视频片段；
+OpenStoryline 把片段包装成 clips JSON，并保存成 split_shots artifact。
+```
+
+---
+
 ## 8. 为什么二次编辑能复用结果
 
 核心原因是：每个工具节点的输出都会被保存成 artifact。
@@ -509,4 +613,153 @@ function runNode(session_id, node_name, args):
 4. 保存 Editing Skill
 5. 自定义 BGM / 字体 / 文案模板
 6. 新版 main 分支中的 AI 转场和 ASR 粗剪
+```
+---
+
+## 11. Agent 如何把用户输入变成 MCP tool 调用
+
+这一段只讲 Agent 决策核心，不讲 Python 语法细节。
+
+真实 HTTP 请求/响应对照样本见：
+
+```text
+experiments/llm-http-request-response.md
+```
+
+注意：这里说的真实 HTTP trace 是 `llm_http_trace.jsonl`，不是 LangChain callback 层的 `llm_raw_trace.jsonl`。
+
+### 11.1 不是单独的 intent classifier
+
+目前没有看到独立的“意图分类器 -> 工作流规划器 -> 工具列表”的硬编码模块。
+
+真实逻辑更像：
+
+```text
+用户输入
++ 系统提示词
++ 素材状态
++ 历史消息
++ 已有工具结果
++ 所有可用 tool schema
+-> 发给 LLM
+-> LLM 返回普通文本或 tool_calls
+```
+
+如果 LLM 返回 `tool_calls`，LangChain Agent 就执行对应工具。工具结果再作为 `ToolMessage` 回到上下文，下一轮继续让 LLM 决定下一步。
+
+### 11.2 发给 LLM 的核心内容
+
+一次真实 `chat_model_start` 中可以看到：
+
+```text
+messages:
+- system: OpenStoryline 剪辑助理系统提示词
+- system: User media upload status，例如本轮携带多少素材、素材库有多少视频/图片
+- human: 用户原始请求
+
+invocation_params.tools:
+- storyline_load_media
+- storyline_split_shots
+- storyline_understand_clips
+- storyline_filter_clips
+- storyline_group_clips
+- storyline_generate_script
+- storyline_generate_voiceover
+- storyline_select_bgm
+- storyline_elementrec_transition
+- storyline_elementrec_text
+- storyline_plan_timeline_pro
+- storyline_render_video
+- storyline_read_node_history
+- skills...
+```
+
+每个 tool 传给 LLM 的不是源码，而是：
+
+```text
+name
+function description
+JSON parameters schema
+```
+
+### 11.3 LLM 响应的关键结构
+
+真实 Agent 层捕获到的响应形态：
+
+```text
+AIMessage.content:
+  好嘞，我按这个思路走...现在开始，第一步先加载素材。
+
+AIMessage.tool_calls:
+  name: storyline_load_media
+  args: {"mode": "auto"}
+  id: call_00_...
+```
+
+这说明模型可以同时输出给用户看的自然语言，以及结构化工具调用。
+
+最新 raw trace 也已经能直接看到同一层信息：
+
+```text
+llm_raw_trace.jsonl
+-> event = llm_end
+-> payload.response.generations[0][0].message.tool_calls
+
+tool_calls:
+- name: storyline_load_media
+  args: {"mode": "auto"}
+  id: call_00_m8YCIFZvRi6MgrUkGB1k8329
+```
+
+### 11.4 为什么模型知道先调 load_media
+
+因为请求里同时包含三类导航信息：
+
+```text
+系统提示词：告诉它常规剪辑流程从 load_media 开始
+素材状态：告诉它用户已经上传素材，不需要再问
+工具描述：load_media 被描述为无依赖入口，且下游操作都依赖它
+```
+
+所以用户即使没有说“调用 load_media”，LLM 也会选择：
+
+```text
+storyline_load_media {"mode": "auto"}
+```
+
+### 11.5 一步一步，而不是一次性完整计划
+
+观察到的行为是循环式：
+
+```text
+LLM 决定调用 load_media
+-> 系统执行 load_media
+-> 工具结果作为 ToolMessage 回到上下文
+-> LLM 再决定 split_shots
+-> 工具结果再回到上下文
+-> LLM 再决定 understand_clips
+```
+
+这就是 Agent 的核心：不是把流程写死，而是让 LLM 在每一步根据当前上下文和工具结果继续选择下一步。
+
+### 11.6 当前 trace 文件
+
+为了学习这部分，当前本地源码加了临时 trace：
+
+```text
+outputs/<session_id>/debug/llm_raw_trace.jsonl
+outputs/<session_id>/debug/llm_trace.jsonl
+```
+
+重点看：
+
+```text
+llm_raw_trace.jsonl:
+  chat_model_start 看真实请求 messages/tools
+  llm_end 看模型响应
+
+llm_trace.jsonl:
+  agent_model_input 看 Agent 视角输入
+  agent_ai_message 看 AIMessage.tool_calls
+  agent_tool_message 看工具结果如何回到上下文
 ```

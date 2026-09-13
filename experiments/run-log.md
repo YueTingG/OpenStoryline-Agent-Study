@@ -267,3 +267,219 @@ Video generated successfully, duration: 14.118 seconds
 局部修改能力验证成功。Agent 能根据用户约束进行较小范围的节点重跑：只更新脚本、重新规划时间线并渲染，没有重跑素材理解、音乐推荐或转场推荐。
 
 这进一步证明 OpenStoryline 的 Agent 工作流具备中间结果复用能力，而不是每次从头执行完整流水线。
+
+## 2026-09-13 - LLM Tool-Calling Trace
+
+### Goal
+
+抓一条真实的“用户输入 -> LLM 请求 -> LLM 响应 -> tool_calls”样本，用来理解 Agent 如何把自然语言转成 MCP tool 调用。
+
+### Code Instrumentation
+
+加入了两层临时 trace：
+
+```text
+1. ChatOpenAI callback trace
+   outputs/<session_id>/debug/llm_raw_trace.jsonl
+
+2. Agent message/tool trace
+   outputs/<session_id>/debug/llm_trace.jsonl
+```
+
+开关：
+
+```text
+OPENSTORYLINE_LLM_TRACE=1
+或 [developer].print_context = true
+```
+
+### Test Session
+
+本轮测试 session：
+
+```text
+session_id: c00b1d158c87430ab4a691d22ecfbaca
+```
+
+用户请求：
+
+```text
+基于我上传的这个素材，做一个 5 秒测试视频。不要联网搜素材，不要配音。现在开始。
+```
+
+### Captured Request
+
+`llm_raw_trace.jsonl` 中 `chat_model_start` 已记录真实模型请求信息，包括：
+
+```text
+messages:
+- system: 剪辑助理系统提示词 + User media upload status
+- human: 用户本轮请求
+
+invocation_params:
+- model: deepseek-v4-flash
+- stream: true
+- temperature: 0.1
+- tools: OpenAI-compatible function tool schema 列表
+```
+
+这验证了：MCP tools 会以 `tools[].function.name / description / parameters` 的形式提供给 LLM。
+
+### Captured Response
+
+`llm_trace.jsonl` 中已看到 Agent 层的真实 AIMessage，包括 `tool_calls`：
+
+```text
+content: 好嘞，我按这个思路走...现在开始，第一步先加载素材。
+tool_calls:
+- name: storyline_load_media
+  args: {"mode": "auto"}
+  id: call_00_8hZPW3tGuVC83HiYjYpt2654
+```
+
+后续真实 tool_call 序列包括：
+
+```text
+storyline_load_media {"mode": "auto"}
+storyline_split_shots {"mode": "auto"}
+storyline_understand_clips {"mode": "auto"}
+storyline_filter_clips {"mode": "auto", "user_request": "这是一段5秒测试视频，保留三段全部可用片段..."}
+storyline_group_clips {"mode": "auto", "user_request": "按从早到晚的生活情境排序..."}
+```
+
+### Important Finding
+
+最初 `llm_raw_trace.jsonl` 的 `llm_end` 里可以看到模型文本和 `finish_reason=tool_calls`，但没有展开 `message.tool_calls`。原因是回调响应对象默认序列化不完整。已在 `src/open_storyline/agent.py` 中补充显式序列化：从返回的 ChatGeneration message 对象读取 `tool_calls / invalid_tool_calls / usage_metadata`。
+
+下一次测试时，应检查：
+
+```text
+llm_raw_trace.jsonl
+-> event = llm_end
+-> payload.response.generations[0][0].message.tool_calls
+```
+
+### Failure During Video Generation
+
+本轮视频生成失败，原因不是 LLM trace，而是版本混搭：Docker v1.0.1 镜像 + 本地新版源码。新版 `plan_timeline_pro` 的依赖中包含：
+
+```text
+generate_ai_transition
+speech_rough_cut
+```
+
+但 Docker 兼容配置的 `available_nodes` 没注册这些节点，导致依赖解析时报：
+
+```text
+IndexError: list index out of range
+Cannot satisfy dependency `plan_timeline` required by `render_video`
+```
+
+已做临时修复：将本地 `plan_timeline_pro` 的强依赖调回基础剪辑路径，不再强依赖 `generate_ai_transition` / `speech_rough_cut`。服务已重启，首页返回 200。
+
+### Follow-up Verification
+
+新测试 session：
+
+```text
+session_id: 8d6c0d78e2ac42fe8e7c7e7fcfa30fed
+```
+
+`llm_raw_trace.jsonl` 已确认能看到完整结构：
+
+```text
+payload.response.generations[0][0].message.tool_calls
+```
+
+第一条 `llm_end`：
+
+```text
+finish_reason: tool_calls
+tool_calls:
+- name: storyline_load_media
+  args: {"mode": "auto"}
+  id: call_00_m8YCIFZvRi6MgrUkGB1k8329
+```
+
+本轮 raw trace 中的 LLM tool call 序列：
+
+```text
+storyline_load_media {"mode": "auto"}
+storyline_split_shots {"mode": "auto"}
+storyline_understand_clips {"mode": "auto"}
+storyline_group_clips {"mode": "auto", "user_request": "5秒测试片，按 Morning_coffee → City_walk → Sunset_chill 的日常节奏排序"}
+storyline_select_bgm {"mode": "auto", "user_request": "轻松明快、适合日常休闲氛围的纯音乐，符合晨间咖啡到日落放松的节奏", "filter_include": {"mood": ["Happy", "Chill"], "scene": ["Vlog", "Relaxing"], "lang": ["bgm"]}}
+storyline_elementrec_transition {"mode": "auto", "duration": 500}
+storyline_plan_timeline_pro {"mode": "auto", "use_beats": true}
+storyline_render_video {"mode": "auto", "include_video_audio": true}
+```
+
+本轮请求里传给模型的是：
+
+```text
+messages:
+- system
+- human: 基于我上传的这个素材，做一个 5 秒测试视频。不要联网搜素材，不要配音。现在开始。
+
+tools: 18 个 OpenAI-compatible function schema
+```
+
+因此目前可以确认：MCP tools 在进入 LLM 时已经被转换成 OpenAI tool schema；LLM 响应时返回 `tool_calls`；LangChain Agent 再按 `tool_calls[].name/args/id` 去执行对应 MCP 工具，并把结果作为 `ToolMessage` 放回下一轮上下文。
+
+本轮最终成功渲染：
+
+```text
+/app/.storyline/.server_cache/8d6c0d78e2ac42fe8e7c7e7fcfa30fed/render_video_1789239517.8204231/output_67ff77f4_1789239517966.mp4
+```
+
+日志显示实际成片约 12.539 秒；Agent 最终回复解释了没有精确压到 5 秒。
+
+### HTTP Request/Response Trace Note
+
+为了避免把 LangChain callback 包装层误认为原始请求，已新增一份专门笔记：
+
+```text
+experiments/llm-http-request-response.md
+```
+
+这份笔记基于真实文件：
+
+```text
+C:\Users\guoyueting\agent\FireRed-OpenStoryline\outputs\e78297ae266440caac2cac2dc5575c51\debug\llm_http_trace.jsonl
+```
+
+其中第 1 行是 `http_request`，第 2 行是 `http_response`，用于对照理解：
+
+```text
+messages + tools -> SSE response chunks -> content/tool_calls -> MCP tool execution
+```
+
+### Go / Eino Demo
+
+已新增一个 Go/Eino 学习 demo：
+
+```text
+experiments/eino-agent-loop-demo
+```
+
+作用是用 Eino 的概念模拟这次 OpenStoryline Agent 循环：
+
+```text
+messages + tools
+-> LLM 返回 content + tool_calls
+-> Eino ToolsNode 根据 tool_calls.name 执行 storyline_load_media
+-> 工具结果返回为下一轮上下文所需的 tool result
+```
+
+该 demo 只 mock 了第一个工具：
+
+```text
+storyline_load_media {"mode":"auto"}
+```
+
+它不是完整 Go 版 OpenStoryline，只用于理解 tool calling loop。已在本机完成：
+
+```text
+go mod tidy
+go build ./...
+```
