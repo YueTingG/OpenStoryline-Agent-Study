@@ -1,0 +1,23 @@
+{
+  "id": "d33ca295-c74e-47d2-8cf9-2e59e58a682d",
+  "model": "deepseek-flash",
+  "message": {
+    "role": "assistant",
+    "reasoning_content": "我们需要回答用户。需要根据字幕和候选字体条目，返回最适合用户要求的**有且只有一条** json。用户要求：极简、干净的字体风格，适合 Vlog 标题。字幕内容：早上先来杯 Morning_coffee，醒醒神。然后 City_walk 出门晃一圈，随便走走。到了 Sunset_chill，就坐着看天慢慢变橙。 包含中英混合，生活方式 Vlog，轻松。候选字体。需要选择一条字体条目。要求极简、干净，适合 Vlog 标题。候选中有现代黑体：LeetfontMengHeiTi, MaoKenShiJinHei, PangMenZhengDaoBiaoTiTi, SourceHanSansSC, SiYuanHeiTi, 力量黑体等。极简干净通常现代黑体，思源黑体 SourceHanSansSC 现代、加粗，适合标题，支持中英。但 Vlog 标题通常干净现代，SourceHanSansSC 很合适。候选中有 SiYuanHeiTi 基础黑体，也干净。SourceHanSansSC 是思源黑体，现代、加粗，lang zh en。适合标题。LeetfontMengHeiTi 现代黑体，但名字萌黑体可能偏圆润？MaoKenShiJinHei 现代黑体，有设计感。PangMenZhengDaoBiaoTiTi 现代黑体，标题体但可能强烈。极简干净，SourceHanSansSC 最通用。用户要求返回有且只有一条 json。应该直接返回字体条目 JSON。注意格式 List[Dict] 中的一个 dict。可能只需要 JSON 对象。需要确保有且只有一条。应该选 SourceHanSansSC。\n\n但需要思考是否可能选手写青春？字幕是 Vlog 生活方式，轻松，但用户明确极简干净，适合 Vlog 标题。极简干净 => 现代黑体，无衬线。SourceHanSansSC 是思源黑体，现代、加粗，中英都支持。Vlog 标题常用。SiYuanHeiTi 基础黑体也极简，但 style 基础，不是现代？SourceHanSansSC 有现代、加粗。选它。\n\n输出 JSON 对象：\n{\"style\":\"现代、加粗\",\"class\":\"黑体\",\"lang\":[\"zh\",\"en\"],\"font_name\":\"SourceHanSansSC\"}\n确保只有一条。可以不加其他解释。用户要求返回有且只有一条json。最终直接 JSON。",
+    "content": "{\"style\":\"现代、加粗\",\"class\":\"黑体\",\"lang\":[\"zh\",\"en\"],\"font_name\":\"SourceHanSansSC\"}"
+  },
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 979,
+    "completion_tokens": 573,
+    "total_tokens": 1552,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 542
+    },
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 979
+  }
+}

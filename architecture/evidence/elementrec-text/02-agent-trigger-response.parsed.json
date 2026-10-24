@@ -1,0 +1,33 @@
+{
+  "id": "8fc70ee9-10d1-42d9-a015-75feccc0fc75",
+  "model": "deepseek-flash",
+  "message": {
+    "role": "assistant",
+    "reasoning_content": "Let me continue. Now element recommendation: text (花字) and transition. Let me do text effects first, then transition.\n\nActually let me check script output. It's empty summary. Let me just proceed. Element rec text.",
+    "content": "文案生成好了。接下来推荐字幕字体样式。",
+    "tool_calls": [
+      {
+        "id": "call_00_7EQkvw0GBuvG8MmqUMns6619",
+        "type": "function",
+        "function": {
+          "name": "storyline_elementrec_text",
+          "arguments": "{\"mode\": \"auto\", \"user_request\": \"极简、干净的字体风格，适合 Vlog 标题。\"}"
+        }
+      }
+    ]
+  },
+  "finish_reason": "tool_calls",
+  "usage": {
+    "prompt_tokens": 7517,
+    "completion_tokens": 125,
+    "total_tokens": 7642,
+    "prompt_tokens_details": {
+      "cached_tokens": 7296
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 47
+    },
+    "prompt_cache_hit_tokens": 7296,
+    "prompt_cache_miss_tokens": 221
+  }
+}

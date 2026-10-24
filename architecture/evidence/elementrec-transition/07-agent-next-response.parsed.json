@@ -1,0 +1,15 @@
+{
+  "role": "assistant",
+  "reasoning_content": "Now voiceover skip. Then BGM select. Then plan timeline with 5 second target? The timeline is fixed tool but has parameters. 5-second total. Hmm plan_timeline doesn't have duration parameter. It says image_duration_ms for AI transition branch. These are videos though.\n\nLet me do generate_voiceover with mode skip. Then select_BGM. Then plan_timeline.\n\nLet me also consider the \"5秒\" requirement - timeline arranges clips. Total 5 seconds might be too short for 3 clips. But let's just proceed. Maybe the timeline tool will handle.\n\nLet me do voiceover skip.",
+  "content": "按你的要求，跳过配音。",
+  "tool_calls": [
+    {
+      "id": "call_00_qpH1vZqMScuCz6JzZXTj4670",
+      "type": "function",
+      "function": {
+        "name": "storyline_generate_voiceover",
+        "arguments": "{\"mode\": \"skip\"}"
+      }
+    }
+  ]
+}

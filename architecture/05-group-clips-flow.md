@@ -3,6 +3,8 @@
 
 group 这一层会调用 llm，把叙事逻辑落实为具体 clip 编排
 
+group clip 可能最终会得到多个 group 结构
+
 # `storyline_group_clips`：把入选片段组织成叙事结构
 
 `storyline_filter_clips` 回答的是：**哪些 clip 继续参与剪辑？**

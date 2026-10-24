@@ -1,3 +1,12 @@
+# 个人理解
+group clip 可能会产生多个 group
+
+script 会为每个 group 生成文案。
+
+把 Agent 给出的文案风格、`understand_clips` 的素材语义和 `group_clips` 的叙事结构组合成专用 prompt
+
+llm 根据 prompt 生成文案
+
 # `storyline_generate_script`：把叙事分组写成具体文案
 
 `storyline_group_clips` 回答的是：**入选片段按照什么顺序组成哪些叙事段落？**

@@ -338,7 +338,7 @@ preview_urls
 | 文案模板推荐 | `script_template_rec` | 风格要求 | 参考模板/风格线索 |
 | 字幕样式 | `elementrec_text` | 审美要求 | 字体、颜色等文本样式 |
 | 背景音乐 | `select_bgm` | 情绪/节奏要求 | BGM 文件 |
-| 转场推荐 | `elementrec_transition` | 转场要求 | 转场配置 |
+| 首尾淡入淡出 | `elementrec_transition` | mode、duration | 整条成片的 fade_in、fade_out 配置 |
 | 配音 | `generate_voiceover` | 字幕文案 | 音频，或 skip 结果 |
 | 时间线 | `plan_timeline_pro` | 素材、文案、BGM、转场、配音 | 时间线 JSON |
 | 渲染 | `render_video` | 时间线 | mp4 文件 |
@@ -387,7 +387,7 @@ trace 中间还有 VLM/节点内部采样请求，它们的 finish_reason 是 st
 | 5 | request 19 / response 20 | `storyline_group_clips` | `{"mode": "auto", "user_request": "按一天的时间顺序排列：早晨咖啡 → 城市漫步 → 日落休闲。"}` | 排序并分组 clips |
 | 6 | request 23 / response 24 | `storyline_generate_script` | `{"mode": "auto", "user_request": "极简 Vlog 风格的短文案，口语、轻松，配合三个章节标题：早晨咖啡、城市漫步、日落休闲。"}` | 生成字幕/文案 |
 | 7 | request 27 / response 28 | `storyline_elementrec_text` | `{"mode": "auto", "user_request": "极简、干净的字体风格，适合 Vlog 标题。"}` | 推荐字幕字体/样式 |
-| 8 | request 31 / response 32 | `storyline_elementrec_transition` | `{"mode": "auto", "duration": 500}` | 推荐转场 |
+| 8 | request 31 / response 32 | `storyline_elementrec_transition` | `{"mode": "auto", "duration": 500}` | 生成整条成片首尾各 500ms 的淡入淡出配置 |
 | 9 | request 33 / response 34 | `storyline_generate_voiceover` | `{"mode": "skip"}` | 按用户要求跳过配音 |
 | 10 | request 35 / response 36 | `storyline_select_BGM` | `{"mode": "auto", "user_request": "轻松、治愈的 Vlog 背景音乐，节奏舒缓。"}` | 这一步返回了一个大写 BGM 的 tool name |
 | 11 | request 37 / response 38 | `storyline_select_bgm` | `{"mode": "auto", "user_request": "轻松、治愈的 Vlog 背景音乐，节奏舒缓。"}` | 实际 BGM 选择 |
@@ -418,7 +418,7 @@ load_media
 `load_media` 的完整说明见：
 
 ```text
-architecture/load-media-flow.md
+architecture/01-load-media-flow.md
 ```
 
 核心结论：
@@ -438,7 +438,7 @@ load_media 节点把文件索引成 media_0001 / media_0002 / media_0003。
 `split_shots` 的完整说明见：
 
 ```text
-architecture/split-shots-flow.md
+architecture/02-split-shots-flow.md
 ```
 
 核心结论：
@@ -456,7 +456,7 @@ OpenStoryline 把片段包装成 clips JSON，并保存成 split_shots artifact�
 `understand_clips` 的完整说明见：
 
 ```text
-architecture/understand-clips-flow.md
+architecture/03-understand-clips-flow.md
 ```
 
 核心结论：
@@ -476,7 +476,7 @@ understand_clips 读取 load_media 和 split_shots 的结果；
 `filter_clips` 的完整说明见：
 
 ```text
-architecture/filter-clips-flow.md
+architecture/04-filter-clips-flow.md
 ```
 
 核心结论：
@@ -496,7 +496,7 @@ filter_clips 读取 split_shots 和 understand_clips 的结果；
 `group_clips` 的完整说明见：
 
 ```text
-architecture/group-clips-flow.md
+architecture/05-group-clips-flow.md
 ```
 
 核心结论：
@@ -516,7 +516,7 @@ groups 中 clip_ids 的排列顺序就是后续采用的逻辑顺序；
 `generate_script` 的完整说明见：
 
 ```text
-architecture/generate-script-flow.md
+architecture/06-generate-script-flow.md
 ```
 
 核心结论：
@@ -526,6 +526,45 @@ generate_script 组合 group_clips 的叙事结构、understand_clips 的画面�
 Agent LLM 提供文案风格，节点内部 LLM 为每个 group 生成 raw_text 和视频标题；
 程序再按标点把 raw_text 拆成 subtitle_units；
 生成 script 不等于生成配音，script 也可以只作为字幕使用。
+```
+
+
+---
+
+### 7.8 elementrec_text 详细流程
+
+`elementrec_text` 的完整说明见：
+
+```text
+architecture/07-elementrec-text-flow.md
+```
+
+核心结论：
+
+```text
+elementrec_text 先从本地 font_info.json 形成字体候选；
+Agent LLM 提供审美方向，节点内部 LLM 根据字幕和候选元数据选择 font_name；
+程序为选择结果补充 font_color；
+节点只生成字体配置，真正加载字体并绘制字幕发生在后续渲染阶段。
+```
+
+---
+
+### 7.9 elementrec_transition 详细流程
+
+`elementrec_transition` 的完整说明见：
+
+```text
+architecture/08-elementrec-transition-flow.md
+```
+
+核心结论：
+
+```text
+Agent LLM 只传入 mode 和 duration，后端自动补入 group_clips 依赖；
+当前节点不读取分组内容，也不调用内部 LLM；
+mode=auto 时固定生成整条成片开头的 fade_in 和结尾的 fade_out；
+真正的淡入淡出在 render_video 拼接完整条视频后应用，不发生在相邻 clips 之间。
 ```
 
 ---

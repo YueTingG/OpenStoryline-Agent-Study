@@ -1,0 +1,15 @@
+{
+  "role": "assistant",
+  "reasoning_content": "Now transitions.",
+  "content": "字体样式确定。接下来推荐转场效果。",
+  "tool_calls": [
+    {
+      "id": "call_00_low1ztIOXt2PSmCCdUpa0517",
+      "type": "function",
+      "function": {
+        "name": "storyline_elementrec_transition",
+        "arguments": "{\"mode\": \"auto\", \"duration\": 500}"
+      }
+    }
+  ]
+}

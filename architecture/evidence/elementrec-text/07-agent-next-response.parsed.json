@@ -1,0 +1,33 @@
+{
+  "id": "7c974179-7ec3-4d39-b242-fcfc9d6c3448",
+  "model": "deepseek-flash",
+  "message": {
+    "role": "assistant",
+    "reasoning_content": "Now transitions.",
+    "content": "字体样式确定。接下来推荐转场效果。",
+    "tool_calls": [
+      {
+        "id": "call_00_low1ztIOXt2PSmCCdUpa0517",
+        "type": "function",
+        "function": {
+          "name": "storyline_elementrec_transition",
+          "arguments": "{\"mode\": \"auto\", \"duration\": 500}"
+        }
+      }
+    ]
+  },
+  "finish_reason": "tool_calls",
+  "usage": {
+    "prompt_tokens": 7754,
+    "completion_tokens": 70,
+    "total_tokens": 7824,
+    "prompt_tokens_details": {
+      "cached_tokens": 7552
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 3
+    },
+    "prompt_cache_hit_tokens": 7552,
+    "prompt_cache_miss_tokens": 202
+  }
+}

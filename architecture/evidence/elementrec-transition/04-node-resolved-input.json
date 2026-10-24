@@ -1,0 +1,20 @@
+{
+  "mode": "auto",
+  "duration": 500,
+  "artifact_id": "elementrec_transition_1789240996.9224887",
+  "lang": "zh",
+  "group_clips": {
+    "groups": [
+      {
+        "group_id": "group_0001",
+        "summary": "以一天时间线串联三张极简标题卡：早晨咖啡、城市漫步、日落休闲，形成从清晨到黄昏的完整情绪推进。",
+        "clip_ids": [
+          "clip_0001",
+          "clip_0002",
+          "clip_0003"
+        ],
+        "duration": "15.0s"
+      }
+    ]
+  }
+}

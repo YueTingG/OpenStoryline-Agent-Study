@@ -1,0 +1,895 @@
+{
+  "messages": [
+    {
+      "content": "## 角色\n你是一个短视频剪辑助理。\n\n## 任务\n- 你需要理解用户提出的需求，执行合适的工具完成剪辑，并避免向用户回复过于专业的剪辑术语。你会拿到一个关于剪辑的工具函数的描述列表。\n- 如果用户是第一次提出“帮我剪辑/处理素材”等类似需求，请先用自然语言列出你计划如何使用给定的剪辑工具及理由，待用户确认。\n- 注意你只能使用你可用的剪辑工具进行剪辑，如果工具能力范围超出了用户需求，请明确告诉用户你做不到。\n- 当用户指定一个剪辑风格时，优先查看工具里面是否有满足的技能（描述以【SKILL】为开头的工具），如果有匹配的技能，优先使用。\n- 整个剪辑流程中，有些节点是固定的，你无法改动；你计划的范围仅限于可以改动的节点。除非用户明确想要跳过某个步骤，否则在列出计划时，**尽可能使用多的工具以丰富视频内容**，除非用户明确指出不要某个元素。\n- 注意，有些节点依赖前面节点的结果，具体的依赖关系你可以在工具描述中看到，请在工具调用前检查依赖。工具会自己寻找依赖的结果，你不需要将前面节点的结果输入到工具参数中。如果工具需要输入参数，会在工具描述中另加说明，请填入合适的参数。\n- 重要：**每次只调用一个工具，不允许并行工具调用**。如果需要连续调用工具，每次调用完工具后，向用户简单总结本次工具调用的结果和下一步的意图，增强互动感，然后再进行下一次工具调用。\n\n## 流程参考\n常规剪辑流程如下，这里每一步都对应一个或多个工具供你使用：\n- 搜索素材 \"search_media\"（可跳过）。如果你发现用户并没有上传素材，可以提示用户你可以上网搜索素材。搜索素材后需要运行load_media工具才可以真正加载到素材。\n- 素材加载 \"load_media\"（固定）。用于获取输入素材的路径、长宽等基础信息。\n- 镜头切分 \"split_shots\"（可跳过）。将素材按镜头切分成片段。\n- 内容理解 \"understand_clips\"（可跳过）。 为每个片段(clips)生成一段描述（captions）\n- 镜头筛选 \"filter_clips\"（可跳过）。根据用户要求，筛选出符合要求的片段(clips)\n- 片段分组 \"group_clips\"（可跳过，但应默认运行）。根据用户要求，对片段进行排序和分组，组织合理的叙事逻辑，并辅助后续文案生成。\n- 文案生成 \"generate_script\"（可跳过）。根据用户要求，生成视频文案。\n- 元素推荐 （可跳过，但应默认运行）。根据用户要求，推荐花字、标题、特效、转场、配音音色等元素。\n- 配音生成 \"generate_voiceover\"（可跳过）。根据文案生成对应的配音。\n- 背景音乐选取 \"select_BGM\"（可跳过）。选择合适的背景音乐。\n- 组织时间线 \"plan_timeline\"（固定）。根据前面的视频片段、文案、语音和BGM，组织成合理的时间线。\n- 渲染成片。\"render_video\"（固定）。根据时间线渲染成片。\n此外，虽然你在工具调用后只能看到summary，但你有一个工具可以读取任意中间节点的输出。你可以用它完成更复杂的任务。\n\n## 风格要求\n- 用简洁、口语化的语言\n\n## 语言\n- 根据用户使用的语言进行回答\n- 如用户要求用英语、日语等回答，则使用相应语言\n\n\n## 示例\n示例 1：列出计划\n[用户]：\n我想要你帮我把我的素材剪辑成旅行vlog，\n[助手]：\n我将要使用如下流程进行剪辑：  \n- 素材加载：需要先对输入素材建立索引，提取元信息。\n- 镜头切分：将素材按镜头切分成片段。\n- 内容理解：对每个镜头生成文字描述。\n- 镜头筛选：筛选出适合放在旅行vlog中的镜头。\n- 片段分组：组织一个合理的素材顺序。\n- 文案生成：配一段符合主题的文案。\n- 花字检索：添加花字元素，增强视觉效果。\n- 转场检索：添加合适的转场效果，让镜头切换更自然。\n- 配音生成：根据文案生成配音。\n- 音乐推荐：选择轻松愉快的vlog背景音乐。\n- 组织时间线：这是剪辑的固定流程。\n- 渲染成片：这也是剪辑的固定流程。\n\n示例 2：不需要工具时，直接回答\n用户：\n什么是“镜头切分”？\n助手：\n镜头切分是指把原始视频按照画面内容或语义边界切分成若干个独立的镜头片段，通常会结合画面变化、音频变化等特征来判断切分点，用于后续剪辑、检索或分析。\n\n示例3：取消配音\n用户：\n之前你给我剪的视频有配音，我现在不想要视频的配音了。\n\n此时助手需要执行generate_voiceover工具，参数mode选择skip。\n\n示例4：取消筛选\n用户：\n你怎么把我的素材丢掉了那么多，我要使用全部素材。\n\n此时助手需要执行filter_clips工具，参数mode选择skip。\n\n【User media upload status】The following fields are used to determine the nature of the media provided by the user: \n{\"Number of media carried in this message sent by the user\": 3, \"Total number of media sent by the user in all conversations\": 3, \"Total number of media in user's media library\": {\"image number in user's media library\": 0, \"video number in user's media library\": 3}}",
+      "role": "system"
+    },
+    {
+      "content": "基于我上传的这个素材，做一个 5 秒测试视频。不要联网搜素材，不要配音。现在开始。",
+      "role": "user"
+    },
+    {
+      "content": "我先说下计划：加载你的素材 → 切分镜头 → 理解内容 → 分组排序 → 生成文案 → 元素推荐（花字/转场）→ 选背景音乐 → 组织时间线 → 渲染成片。因为你说不要配音，所以配音这步我会跳过。\n\n先加载素材，建立索引。",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "type": "function",
+          "id": "call_00_omq8yEAaprVmw6risxuU6828",
+          "function": {
+            "name": "storyline_load_media",
+            "arguments": "{\"mode\": \"auto\"}"
+          }
+        }
+      ]
+    },
+    {
+      "content": "{'summary': {'node_summary': {'ERROR': '', 'WARNING': '', 'INFO_LLM': '', 'INFO_USER': '[2026-09-12T19:22:40.602268] Added media_0001: (video)\\n[2026-09-12T19:22:40.669416] Added media_0002: (video)\\n[2026-09-12T19:22:40.733529] Added media_0003: (video)\\n[2026-09-12T19:22:40.734001] [Node load_media] Media indexing completed successfully: 3 video(s), 0 image(s)', 'preview_urls': [], 'artifact_id': 'load_media_1789240960.4566667'}, 'tool_excute_result': {}}, 'isError': False}",
+      "role": "tool",
+      "tool_call_id": "call_00_omq8yEAaprVmw6risxuU6828"
+    },
+    {
+      "content": "素材加载完成，一共 3 个视频。接下来做镜头切分。",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "type": "function",
+          "id": "call_00_LIMqSlSnWYl4xNV1Zah18309",
+          "function": {
+            "name": "storyline_split_shots",
+            "arguments": "{\"mode\": \"auto\"}"
+          }
+        }
+      ]
+    },
+    {
+      "content": "{'summary': {'node_summary': {'ERROR': '', 'WARNING': '', 'INFO_LLM': '', 'INFO_USER': '[2026-09-12T19:22:42.475031] clip_0001 split successfully\\n[2026-09-12T19:22:43.052775] clip_0002 split successfully\\n[2026-09-12T19:22:43.589515] clip_0003 split successfully\\n[2026-09-12T19:22:43.589790] split_shots executed successfully, output clips count: 3', 'preview_urls': ['/app/outputs/e78297ae266440caac2cac2dc5575c51/media/media_0001.mp4', '/app/outputs/e78297ae266440caac2cac2dc5575c51/media/media_0002.mp4', '/app/outputs/e78297ae266440caac2cac2dc5575c51/media/media_0003.mp4'], 'artifact_id': 'split_shots_1789240961.7285173'}, 'tool_excute_result': {}}, 'isError': False}",
+      "role": "tool",
+      "tool_call_id": "call_00_LIMqSlSnWYl4xNV1Zah18309"
+    },
+    {
+      "content": "切成 3 个片段。接下来理解每个片段的内容。",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "type": "function",
+          "id": "call_00_WPjg22wxsnY2QxwmZeko6484",
+          "function": {
+            "name": "storyline_understand_clips",
+            "arguments": "{\"mode\": \"auto\"}"
+          }
+        }
+      ]
+    },
+    {
+      "content": "{'summary': {'node_summary': {'ERROR': '', 'WARNING': '', 'INFO_LLM': '', 'INFO_USER': '[2026-09-12T19:23:00.210758] Clip understanding completed. Analyzed 3 clips in total. Overall description: 这些素材由三张无实拍人物与动作的标题卡组成，分别显示“Morning_coffee”“City_walk”“Sunset_chill”，并采用明黄色、彩色条纹测试图、深灰蓝与橙红色块等不同视觉设计。整体上，它们更像是一组极简风格的Vlog章节片头或转场标题，按“早晨咖啡—城市漫步—日落休闲”的顺序暗示一天中的生活片段。\\n\\n从叙事角度看，素材本身没有具体人物、情节或场景变化，主要承担主题提示与氛围铺垫功能，整体风格简洁、平面化，情绪在明快与平静冷淡之间切换。', 'preview_urls': [], 'artifact_id': 'understand_clips_1789240964.6216764'}, 'tool_excute_result': {}}, 'isError': False}",
+      "role": "tool",
+      "tool_call_id": "call_00_WPjg22wxsnY2QxwmZeko6484"
+    },
+    {
+      "content": "这三个片段其实是三张标题卡：「Morning_coffee」「City_walk」「Sunset_chill」，像一组极简 Vlog 章节片头。我保留全部片段，不做删减。",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "type": "function",
+          "id": "call_00_Wzc7NWrTYJ9jTGuVjYDy5758",
+          "function": {
+            "name": "storyline_filter_clips",
+            "arguments": "{\"mode\": \"auto\", \"user_request\": \"这是测试视频，保留全部片段，不要丢弃任何素材。\"}"
+          }
+        }
+      ]
+    },
+    {
+      "content": "{'summary': {'node_summary': {'ERROR': '', 'WARNING': '', 'INFO_LLM': '', 'INFO_USER': '[2026-09-12T19:23:02.887112] Successfully filtered 3 clips', 'preview_urls': [], 'artifact_id': 'filter_clips_1789240982.0975573'}, 'tool_excute_result': {}}, 'isError': False}",
+      "role": "tool",
+      "tool_call_id": "call_00_Wzc7NWrTYJ9jTGuVjYDy5758"
+    },
+    {
+      "content": "3 个片段全部保留。接下来按「早晨咖啡 → 城市漫步 → 日落休闲」的顺序做分组排序。",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "type": "function",
+          "id": "call_00_AFFMMX8bMIGkZJtf9bBn3677",
+          "function": {
+            "name": "storyline_group_clips",
+            "arguments": "{\"mode\": \"auto\", \"user_request\": \"按一天的时间顺序排列：早晨咖啡 → 城市漫步 → 日落休闲。\"}"
+          }
+        }
+      ]
+    },
+    {
+      "content": "{'summary': {'node_summary': {'ERROR': '', 'WARNING': '', 'INFO_LLM': '', 'INFO_USER': '[2026-09-12T19:23:07.527672] Grouping successful: 1 groups in total', 'preview_urls': [], 'artifact_id': 'group_clips_1789240983.9655333'}, 'tool_excute_result': {}}, 'isError': False}",
+      "role": "tool",
+      "tool_call_id": "call_00_AFFMMX8bMIGkZJtf9bBn3677"
+    },
+    {
+      "content": "排序完成，合成 1 个分组。接下来生成一段简短的文案（不需要配音，只作为字幕氛围）。",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "type": "function",
+          "id": "call_00_r1AovxSPUcdmZPHQrO1R5638",
+          "function": {
+            "name": "storyline_generate_script",
+            "arguments": "{\"mode\": \"auto\", \"user_request\": \"极简 Vlog 风格的短文案，口语、轻松，配合三个章节标题：早晨咖啡、城市漫步、日落休闲。\"}"
+          }
+        }
+      ]
+    },
+    {
+      "content": "{'summary': {'node_summary': {'ERROR': '', 'WARNING': '', 'INFO_LLM': '', 'INFO_USER': '', 'preview_urls': [], 'artifact_id': 'generate_script_1789240988.822574'}, 'tool_excute_result': {}}, 'isError': False}",
+      "role": "tool",
+      "tool_call_id": "call_00_r1AovxSPUcdmZPHQrO1R5638"
+    },
+    {
+      "content": "文案生成好了。接下来推荐字幕字体样式。",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "type": "function",
+          "id": "call_00_7EQkvw0GBuvG8MmqUMns6619",
+          "function": {
+            "name": "storyline_elementrec_text",
+            "arguments": "{\"mode\": \"auto\", \"user_request\": \"极简、干净的字体风格，适合 Vlog 标题。\"}"
+          }
+        }
+      ]
+    },
+    {
+      "content": "{'summary': {'node_summary': {'ERROR': '', 'WARNING': '', 'INFO_LLM': '', 'INFO_USER': '[2026-09-12T19:23:15.992400] [elementrec_text] Use font `SourceHanSansSC`', 'preview_urls': [], 'artifact_id': 'elementrec_text_1789240993.1517227'}, 'tool_excute_result': {}}, 'isError': False}",
+      "role": "tool",
+      "tool_call_id": "call_00_7EQkvw0GBuvG8MmqUMns6619"
+    },
+    {
+      "content": "字体样式确定。接下来推荐转场效果。",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "type": "function",
+          "id": "call_00_low1ztIOXt2PSmCCdUpa0517",
+          "function": {
+            "name": "storyline_elementrec_transition",
+            "arguments": "{\"mode\": \"auto\", \"duration\": 500}"
+          }
+        }
+      ]
+    },
+    {
+      "content": "{'summary': {'node_summary': {'ERROR': '', 'WARNING': '', 'INFO_LLM': '', 'INFO_USER': '[2026-09-12T19:23:16.953046] [elementrec_transition] Adding fade transitions: 500ms fade-in at start, 500ms fade-out at end', 'preview_urls': [], 'artifact_id': 'elementrec_transition_1789240996.9224887'}, 'tool_excute_result': {}}, 'isError': False}",
+      "role": "tool",
+      "tool_call_id": "call_00_low1ztIOXt2PSmCCdUpa0517"
+    }
+  ],
+  "model": "deepseek-v4-flash",
+  "stream": true,
+  "temperature": 0.1,
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "storyline_load_media",
+        "description": "Loads and indexes input media. Entry point with no dependencies; required by all downstream operations",
+        "parameters": {
+          "properties": {
+            "mode": {
+              "default": "auto",
+              "description": "auto: Automatic mode; skip: Skip mode; default: Default mode",
+              "enum": [
+                "auto",
+                "skip",
+                "default"
+              ],
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "storyline_search_media",
+        "description": "search",
+        "parameters": {
+          "properties": {
+            "mode": {
+              "default": "auto",
+              "description": "auto: Automatically search media from pexels; skip: skip search; default: skip search",
+              "enum": [
+                "auto",
+                "skip",
+                "default"
+              ],
+              "type": "string"
+            },
+            "photo_number": {
+              "default": 0,
+              "description": "The number of images the user wants to obtain",
+              "type": "integer"
+            },
+            "video_number": {
+              "default": 5,
+              "description": "The number of videos the user wants to obtain",
+              "type": "integer"
+            },
+            "search_keyword": {
+              "default": "scenery",
+              "description": "Keyword of the media the user wants to obtain. Only one keyword is allowed; multiple keywords are not permitted.",
+              "type": "string"
+            },
+            "orientation": {
+              "default": "landscape",
+              "description": "landscape: The screen is wider horizontally and narrower vertically, making it suitable for computer screens, landscape images, etc;portrait: The screen is higher vertically and narrower horizontally, making it suitable for mobile browsing and close-up shots of people.",
+              "enum": [
+                "landscape",
+                "portrait"
+              ],
+              "type": "string"
+            },
+            "min_video_duration": {
+              "default": 1,
+              "description": "The shortest duration of footage requested by the user in seconds.",
+              "type": "integer"
+            },
+            "max_video_duration": {
+              "default": 30,
+              "description": "The longest duration of footage requested by the user in seconds.",
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "storyline_split_shots",
+        "description": "Segment input video based on shot boundary detection",
+        "parameters": {
+          "properties": {
+            "mode": {
+              "default": "auto",
+              "description": "auto: Automatically segment shots based on scene changes, treat images as single shots; skip: Do not segment shots; default: Use default segmentation method",
+              "enum": [
+                "auto",
+                "skip",
+                "default"
+              ],
+              "type": "string"
+            },
+            "min_shot_duration": {
+              "default": 1000,
+              "description": "Segmented shots must not be shorter than this duration (unit: milliseconds)",
+              "type": "integer"
+            },
+            "max_shot_duration": {
+              "default": 10000,
+              "description": "If a single shot exceeds this duration, force segmentation (unit: milliseconds)",
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "storyline_understand_clips",
+        "description": "Analyze clips and generate descriptions for each. Requires `load_media` and `split_shots` output",
+        "parameters": {
+          "properties": {
+            "mode": {
+              "default": "auto",
+              "description": "auto: Generate descriptions based on media content; skip: Do not generate descriptions; default: Use default description generation method",
+              "enum": [
+                "auto",
+                "skip",
+                "default"
+              ],
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "storyline_filter_clips",
+        "description": "Filter clips based on their descriptions according to user requirements. Depends on the results from the understand_clips tool",
+        "parameters": {
+          "properties": {
+            "mode": {
+              "default": "auto",
+              "description": "auto: Filter clips based on user requirements; skip: Skip filtering; default: Use default filtering method",
+              "enum": [
+                "auto",
+                "skip",
+                "default"
+              ],
+              "type": "string"
+            },
+            "user_request": {
+              "default": "",
+              "description": "User's requirements for clip filtering; if none provided, formulate one based on media materials and other editing requirements.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "storyline_group_clips",
+        "description": "Group clips based on their descriptions according to user requirements. Depends on the filter_clips tool output",
+        "parameters": {
+          "properties": {
+            "mode": {
+              "default": "auto",
+              "description": "auto: Organize clips in a logical order based on narrative flow of media content and user's sequencing requirements; skip: Skip sorting; default: Use default ordering method",
+              "enum": [
+                "auto",
+                "skip",
+                "default"
+              ],
+              "type": "string"
+            },
+            "user_request": {
+              "default": "",
+              "description": "User's requirements for media organization order; if none provided, arrange in a logical narrative sequence following standard conventions.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "storyline_generate_script",
+        "description": "Generate video script/copy that can be used to synthesize voice-over or be directly applied as video subtitlesSupport lyrical, humorous, and casual styles, and consider using the `subtitle_imitation_skill` for special styles.",
+        "parameters": {
+          "properties": {
+            "mode": {
+              "default": "auto",
+              "description": "auto: Generate appropriate script based on media content and user's script requirements; skip: Skip, do not add subtitles; default: Use default script",
+              "enum": [
+                "auto",
+                "skip",
+                "default"
+              ],
+              "type": "string"
+            },
+            "user_request": {
+              "default": "",
+              "description": "User's requirements for the script.",
+              "type": "string"
+            },
+            "custom_script": {
+              "additionalProperties": true,
+              "default": {},
+              "description": "If user has specific character-level editing requirements for script/title, pass the edited custom script and title through this parameter. Format should be based on the original script generation output format but with the subtitle_units field removed. In this case, mode must use `auto`, other modes are prohibited",
+              "type": "object"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "storyline_script_template_rec",
+        "description": "Select an script template (script style) for generation",
+        "parameters": {
+          "properties": {
+            "mode": {
+              "default": "auto",
+              "description": "auto: Select an appropriate copywriting template based on the material content and user's requirements for voiceover style; skip: Skip;",
+              "enum": [
+                "auto",
+                "skip",
+                "default"
+              ],
+              "type": "string"
+            },
+            "user_request": {
+              "default": "",
+              "description": "User's specific requirements for the script style.",
+              "type": "string"
+            },
+            "filter_include": {
+              "additionalProperties": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "default": {},
+              "description": "Positive filter conditions. Multiple dimensions are combined with AND, multiple values within the same dimension are combined with OR.\nSupported dimensions:\n- tags: category, one or more of [Life, Food, Beauty, Entertainment, Travel, Tech, Business, Vehicle, Health, Family, Pets, Knowledge]",
+              "type": "object"
+            },
+            "filter_exclude": {
+              "additionalProperties": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "default": {},
+              "description": "Negative filter conditions. Items matching these conditions will be excluded. The semantics are the same as filter_include. Supported dimensions: tags, id.",
+              "type": "object"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "storyline_generate_voiceover",
+        "description": "Generate voice-over based on the script",
+        "parameters": {
+          "properties": {
+            "mode": {
+              "default": "auto",
+              "description": "auto: Generate appropriate voiceover based on media content and user's voice requirements; skip: Skip voiceover; default: Use default voiceover",
+              "enum": [
+                "auto",
+                "skip",
+                "default"
+              ],
+              "type": "string"
+            },
+            "user_request": {
+              "default": "",
+              "description": "User's requirements for voiceover.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "storyline_select_bgm",
+        "description": "Select appropriate BGM based on user requirements",
+        "parameters": {
+          "properties": {
+            "mode": {
+              "default": "auto",
+              "description": "auto: Select appropriate music based on media content and user's music requirements; skip: Do not use music; default: Use default music",
+              "enum": [
+                "auto",
+                "skip",
+                "default"
+              ],
+              "type": "string"
+            },
+            "user_request": {
+              "default": "",
+              "description": "User's requirements for background music.",
+              "type": "string"
+            },
+            "filter_include": {
+              "additionalProperties": {
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    }
+                  ]
+                },
+                "type": "array"
+              },
+              "default": {},
+              "description": "Positive filter conditions. Multiple dimensions are combined with AND, multiple values within the same dimension are combined with OR.\nSupported dimensions:\n- mood: music emotion, one or more of [Dynamic, Chill, Happy, Sorrow, Romantic, Calm, Excited, Healing, Inspirational]\n- scene: usage scene, one or more of [Vlog, Travel, Relaxing, Emotion, Transition, Outdoor, Cafe, Evening, Scenery, Food, Date, Club]\n- genre: music genre, one or more of [Pop, BGM, Electronic, R&B/Soul, Hip Hop/Rap, Rock, Jazz, Folk, Classical, Chinese Style]\n- lang: lyric language, one or more of [bgm, en, zh, ko, ja]\n- id: specific music ids (int)",
+              "type": "object"
+            },
+            "filter_exclude": {
+              "additionalProperties": {
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    }
+                  ]
+                },
+                "type": "array"
+              },
+              "default": {},
+              "description": "Negative filter conditions. Items matching these conditions will be excluded. The semantics are the same as filter_include. Supported dimensions: mood, scene, genre, lang, id.",
+              "type": "object"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "storyline_elementrec_transition",
+        "description": "Recommend transition effects according to user needs and segment count, ensuring transition list length equals group count",
+        "parameters": {
+          "properties": {
+            "mode": {
+              "default": "auto",
+              "description": "auto: add fade in and fade out transitions at beginning and end; skip: Do not use transitions; default: Use default transitions",
+              "enum": [
+                "auto",
+                "skip",
+                "default"
+              ],
+              "type": "string"
+            },
+            "duration": {
+              "default": 1000,
+              "description": "Duration of the transition in milliseconds",
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "storyline_elementrec_text",
+        "description": "Recommend text effects according to user needs",
+        "parameters": {
+          "properties": {
+            "mode": {
+              "default": "auto",
+              "description": "auto: Select appropriate font style and color based on user's subtitle font style requirements; default: Use default font",
+              "enum": [
+                "auto",
+                "skip",
+                "default"
+              ],
+              "type": "string"
+            },
+            "user_request": {
+              "default": "",
+              "description": "User's requirements for font style",
+              "type": "string"
+            },
+            "filter_include": {
+              "additionalProperties": {
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    }
+                  ]
+                },
+                "type": "array"
+              },
+              "default": {},
+              "description": "Positive filter conditions. Multiple dimensions are combined with AND, multiple values within the same dimension are combined with OR.\nSupported dimensions:\n- class: Font type, one or more[Creative, Handwriting, Calligraphy, Basic]\n",
+              "type": "object"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "storyline_plan_timeline_pro",
+        "description": "Create a coherent timeline by arranging video clips, subtitles, voice-over, and background music. ",
+        "parameters": {
+          "properties": {
+            "mode": {
+              "default": "auto",
+              "description": "auto: Automatic mode; skip: Skip mode; default: Default mode",
+              "enum": [
+                "auto",
+                "skip",
+                "default"
+              ],
+              "type": "string"
+            },
+            "use_beats": {
+              "default": true,
+              "description": "Whether clip transitions should sync with BGM beats",
+              "type": "boolean"
+            },
+            "is_speech_rough_cut": {
+              "default": false,
+              "description": "Whether the input clips are from speech rough cut, which affects the default timeline strategy selection",
+              "type": "boolean"
+            },
+            "is_ai_transition": {
+              "default": false,
+              "description": "Whether to build a minimal AI transition timeline by concatenating clips in order without subtitles, voiceover, cutting, or speed changes",
+              "type": "boolean"
+            },
+            "image_duration_ms": {
+              "default": 3000,
+              "description": "Default duration for image clips in milliseconds when using the AI transition timeline branch",
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "storyline_render_video",
+        "description": "Render final video from the timeline",
+        "parameters": {
+          "properties": {
+            "mode": {
+              "default": "auto",
+              "description": "auto: Automatic mode; skip: Skip mode; default: Default mode",
+              "enum": [
+                "auto",
+                "skip",
+                "default"
+              ],
+              "type": "string"
+            },
+            "aspect_ratio": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "When explicitly specified, forces the canvas to one of 16:9, 4:3, 1:1, 3:4, 9:16. If unset, the system automatically infers the most suitable aspect ratio."
+            },
+            "output_max_dimension_px": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "description": "Maximum output size in pixels (longest side); defaults to 1080 and works with the aspect ratio."
+            },
+            "clip_compose_mode": {
+              "default": "padding",
+              "description": "How to fit media into the canvas: 'padding' keeps aspect ratio and fills empty areas with a solid color; 'crop' center-crops media to match the canvas aspect ratio.",
+              "type": "string"
+            },
+            "bg_color": {
+              "anyOf": [
+                {
+                  "maxItems": 1,
+                  "minItems": 1,
+                  "prefixItems": [
+                    {
+                      "type": "integer"
+                    }
+                  ],
+                  "type": "array"
+                },
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": [
+                0,
+                0,
+                0
+              ],
+              "description": "Background color for canvas padding, specified as an (R, G, B) tuple (no alpha channel)."
+            },
+            "crf": {
+              "default": 23,
+              "description": "CRF value (10–30), lower = better quality, larger file",
+              "type": "integer"
+            },
+            "font_color": {
+              "default": [
+                255,
+                255,
+                255,
+                255
+              ],
+              "description": "Font color, RGBA format (R, G, B, A), values range 0-255",
+              "maxItems": 4,
+              "minItems": 4,
+              "prefixItems": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "integer"
+                }
+              ],
+              "type": "array"
+            },
+            "font_size": {
+              "default": 40,
+              "description": "Font size in pixels. Recommended range: 28–120.",
+              "type": "integer"
+            },
+            "margin_bottom": {
+              "default": 270,
+              "description": "Bottom margin for subtitles in pixels. Defaults to 80; valid range: 40–1040.",
+              "type": "integer"
+            },
+            "stroke_width": {
+              "default": 2,
+              "description": "Text stroke width (px), typically 0–8",
+              "type": "integer"
+            },
+            "stroke_color": {
+              "default": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "description": "Text stroke color in RGBA format",
+              "maxItems": 4,
+              "minItems": 4,
+              "prefixItems": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "integer"
+                }
+              ],
+              "type": "array"
+            },
+            "bgm_volume_scale": {
+              "default": 0.25,
+              "description": "Background music volume multiplier, range 0.0–3.0 (1.0 = default volume)",
+              "type": "number"
+            },
+            "tts_volume_scale": {
+              "default": 2.0,
+              "description": "TTS volume multiplier, range 0.0–3.0 (1.0 = default volume)",
+              "type": "number"
+            },
+            "include_video_audio": {
+              "default": false,
+              "description": "Whether to include the original video audio track",
+              "type": "boolean"
+            },
+            "video_volume_scale": {
+              "default": 1.0,
+              "description": "Original video audio volume multiplier, range 0.0–3.0 (1.0 = default volume)",
+              "type": "number"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "storyline_read_node_history",
+        "description": "Retrieve the execution result of any node using its artifact_id",
+        "parameters": {
+          "properties": {
+            "query_artifact_id": {
+              "description": "The artifact_id used to retrieve the corresponding JSON",
+              "type": "string"
+            }
+          },
+          "required": [
+            "query_artifact_id"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "storyline_write_skills",
+        "description": "Save the generated Agent Skill (Markdown format) to the file system and return the absolute file path on success.",
+        "parameters": {
+          "properties": {
+            "skill_name": {
+              "description": "Skill file name, e.g., 'fast_paced_vlog', without extension",
+              "type": "string"
+            },
+            "skill_dir": {
+              "default": ".storyline/skills/",
+              "description": "Skill storage directory, defaults to '.storyline/skills/'",
+              "type": "string"
+            },
+            "skill_content": {
+              "default": "",
+              "description": "Skill content in Markdown format",
+              "type": "string"
+            }
+          },
+          "required": [
+            "skill_name"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "subtitle_imitation_skill",
+        "description": "【SKILL】基于用户提供的参考文案样本，对视频素材内容进行深度文风仿写，生成风格化脚本。",
+        "parameters": {
+          "properties": {
+            "arguments": {
+              "default": "",
+              "description": "Arguments to pass to the skill",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "create_profile_style_skill",
+        "description": "【SKILL】分析当前剪辑逻辑与风格，总结并生成一个新的可复用 Skill 文件，存入剪辑技能库。",
+        "parameters": {
+          "properties": {
+            "arguments": {
+              "default": "",
+              "description": "Arguments to pass to the skill",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      }
+    }
+  ]
+}

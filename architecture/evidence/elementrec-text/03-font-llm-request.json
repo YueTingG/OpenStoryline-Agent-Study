@@ -1,0 +1,17 @@
+{
+  "messages": [
+    {
+      "content": "你是一个字体推荐器，根据我提供视频字幕与字体条目（List[Dict]格式），返回最适合用户要求的**有且只有一条**json。",
+      "role": "system"
+    },
+    {
+      "content": "字幕：\n[{'group_id': 'group_0001', 'raw_text': '早上先来杯 Morning_coffee，醒醒神。然后 City_walk 出门晃一圈，随便走走。到了 Sunset_chill，就坐着看天慢慢变橙。', 'subtitle_units': [{'unit_id': 'subtitle_0001', 'index_in_group': 0, 'text': '早上先来杯 Morning_coffee'}, {'unit_id': 'subtitle_0002', 'index_in_group': 1, 'text': '醒醒神'}, {'unit_id': 'subtitle_0003', 'index_in_group': 2, 'text': '然后 City_walk 出门晃一圈'}, {'unit_id': 'subtitle_0004', 'index_in_group': 3, 'text': '随便走走'}, {'unit_id': 'subtitle_0005', 'index_in_group': 4, 'text': '到了 Sunset_chill'}, {'unit_id': 'subtitle_0006', 'index_in_group': 5, 'text': '就坐着看天慢慢变橙'}]}]\n\n候选字体条目：\n[{'style': '力量', 'class': '黑体', 'lang': ['zh', 'en'], 'font_name': 'BiaoXiaoZhiBiaoTiHei'}, {'style': '力量', 'class': '黑体', 'lang': ['zh', 'en', 'jp'], 'font_name': 'CP_Revenge'}, {'style': '手写、青春', 'class': '创意字', 'lang': ['zh', 'en'], 'font_name': 'ChenYuLuoYanTi'}, {'style': '力量', 'class': '黑体', 'lang': ['zh', 'en'], 'font_name': 'DeyiHei'}, {'style': '手写、青春', 'class': '创意字', 'lang': ['zh', 'en'], 'font_name': 'HanChanShouZhuoTi'}, {'style': '手写', 'class': '楷体', 'lang': ['zh', 'en'], 'font_name': 'JiangXiZuoKaiTi'}, {'style': '现代', 'class': '黑体', 'lang': ['zh', 'en'], 'font_name': 'LeetfontMengHeiTi'}, {'style': '现代', 'class': '黑体', 'lang': ['zh', 'en'], 'font_name': 'MaoKenShiJinHei'}, {'style': '现代', 'class': '黑体', 'lang': ['zh', 'en'], 'font_name': 'PangMenZhengDaoBiaoTiTi'}, {'style': '手写', 'class': '楷体', 'lang': ['zh', 'en'], 'font_name': 'PingFangXingChenTi'}, {'style': '趣味、手写', 'class': '创意字', 'lang': ['zh', 'en'], 'font_name': 'QianTuXueHuaTi'}, {'style': '优雅、复古', 'class': '宋体', 'lang': ['zh', 'en'], 'font_name': 'ShiWeiB2JiaTangSongTi'}, {'style': '基础', 'class': '黑体', 'lang': ['zh', 'en'], 'font_name': 'SiYuanHeiTi'}, {'style': '现代、加粗', 'class': '黑体', 'lang': ['zh', 'en'], 'font_name': 'SourceHanSansSC'}, {'style': '趣味', 'class': '创意字', 'lang': ['zh', 'en'], 'font_name': 'UnifontDianZhengHei'}, {'style': '手写、青春', 'class': '创意字', 'lang': ['zh', 'en'], 'font_name': 'ZhangKuQinKeHuangYouTi'}, {'style': '力量', 'class': '黑体', 'lang': ['zh', 'en'], 'font_name': 'ZiZhiQuXiMaiTi'}]\n\n用户要求：\n极简、干净的字体风格，适合 Vlog 标题。",
+      "role": "user"
+    }
+  ],
+  "model": "deepseek-v4-flash",
+  "max_completion_tokens": 2048,
+  "stream": true,
+  "temperature": 0.1,
+  "top_p": 0.9
+}
