@@ -468,6 +468,66 @@ understand_clips 读取 load_media 和 split_shots 的结果；
 结果保存为 understand_clips artifact，并将执行摘要返回 Agent LLM。
 ```
 
+
+---
+
+### 7.5 filter_clips 详细流程
+
+`filter_clips` 的完整说明见：
+
+```text
+architecture/filter-clips-flow.md
+```
+
+核心结论：
+
+```text
+filter_clips 读取 split_shots 和 understand_clips 的结果；
+根据 Agent 整理出的 user_request 和每个 clip 的 caption 生成保留判断；
+程序将 keep=true 的有效 clip_id 整理为 selected；
+它不删除视频文件，只决定后续节点采用哪些 clips。
+```
+
+
+---
+
+### 7.6 group_clips 详细流程
+
+`group_clips` 的完整说明见：
+
+```text
+architecture/group-clips-flow.md
+```
+
+核心结论：
+
+```text
+group_clips 只读取 filter_clips 已选中的 clips；
+根据 Agent 整理出的 user_request、caption 和 duration 生成叙事分组；
+groups 中 clip_ids 的排列顺序就是后续采用的逻辑顺序；
+它只生成结构，不在这一阶段拼接或修改视频文件。
+```
+
+
+---
+
+### 7.7 generate_script 详细流程
+
+`generate_script` 的完整说明见：
+
+```text
+architecture/generate-script-flow.md
+```
+
+核心结论：
+
+```text
+generate_script 组合 group_clips 的叙事结构、understand_clips 的画面语义和 split_shots 的时长；
+Agent LLM 提供文案风格，节点内部 LLM 为每个 group 生成 raw_text 和视频标题；
+程序再按标点把 raw_text 拆成 subtitle_units；
+生成 script 不等于生成配音，script 也可以只作为字幕使用。
+```
+
 ---
 
 ## 8. 为什么二次编辑能复用结果

@@ -1,0 +1,23 @@
+{
+  "id": "9309e10a-97b2-44ce-a363-05122d6ae402",
+  "model": "deepseek-flash",
+  "message": {
+    "role": "assistant",
+    "reasoning_content": "Let me produce JSON. Style: 极简 Vlog 风格短文案，口语轻松。One group, 45~75 chars, duration 15.00.\n\nNeed first-person \"我\", oral, light. Must mention Morning_coffee, City_walk, Sunset_chill. Avoid parentheses, ellipsis. One emoji maybe.\n\nCount characters: Chinese chars count. Let's write:\n\n\"早上先来杯 Morning_coffee，醒醒神。然后 City_walk 出门晃一圈，随便走走。到了 Sunset_chill，就坐着看天慢慢变橙。☕\"\n\nCount: let's count roughly. \"早上先来杯\" 5, \" Morning_coffee\" — do letters count? Probably count as characters. Hmm, 45~75. Let's count Chinese chars and treat English words as... safer to count each English word as one? Ambiguous. Let's just keep it reasonably within range.\n\nLet me count characters literally:\n早(1)上2先3来4杯5 M6o7r8n9i10n11g12_13c14o15f16f17e18e19，20醒21醒22神23。24然25后26 C27i28t29y30_31w32a33l34k35 36出37门38晃39一40圈41，42随43便44走45走46。47到48了49 S50u51n52s53e54t55_56c57h58i59l60l61，62就63坐64着65看66天67慢68慢69变70橙71。72☕73\n\nThat's 73, within 45-75. Good. But emoji counts as 1 char typically. 73 OK.\n\nActually the style is 极简 Vlog 风格, 口语轻松. Fine. Maybe add slight transition words. It's fine.\n\nTitle: 8-15 chars. \"一杯咖啡走到日落\" 8 chars. Or \"从早咖啡晃到日落 chill\" — keep simple: \"从早咖啡晃到日落时分\" 10 chars. Good.\n\nOutput JSON only.",
+    "content": "{\n  \"group_scripts\": [\n    {\n      \"group_id\": \"group_0001\",\n      \"duration\": 15.00,\n      \"raw_text\": \"早上先来杯 Morning_coffee，醒醒神。然后 City_walk 出门晃一圈，随便走走。到了 Sunset_chill，就坐着看天慢慢变橙。☕\"\n    }\n  ],\n  \"title\": \"从早咖啡晃到日落时分\"\n}"
+  },
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 1738,
+    "completion_tokens": 551,
+    "total_tokens": 2289,
+    "prompt_tokens_details": {
+      "cached_tokens": 1024
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 456
+    },
+    "prompt_cache_hit_tokens": 1024,
+    "prompt_cache_miss_tokens": 714
+  }
+}

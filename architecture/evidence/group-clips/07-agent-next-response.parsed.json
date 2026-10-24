@@ -1,0 +1,33 @@
+{
+  "id": "f399b03b-d56d-43d8-89f7-c1f1c61dd0aa",
+  "model": "deepseek-flash",
+  "message": {
+    "role": "assistant",
+    "reasoning_content": "Now generate script. For a test video, generate a short script. We could use script_template_rec. Let me generate script with auto mode, casual style.\n\nActually, should I generate script? The user said no voiceover. But script could be used as subtitles. For a test video, subtitles are fine. But maybe keep it minimal. Let me generate a light script. Hmm, but \"test video\" 5 seconds. Let me generate a short casual script.\n\nLet me do generate_script.",
+    "content": "排序完成，合成 1 个分组。接下来生成一段简短的文案（不需要配音，只作为字幕氛围）。",
+    "tool_calls": [
+      {
+        "id": "call_00_r1AovxSPUcdmZPHQrO1R5638",
+        "type": "function",
+        "function": {
+          "name": "storyline_generate_script",
+          "arguments": "{\"mode\": \"auto\", \"user_request\": \"极简 Vlog 风格的短文案，口语、轻松，配合三个章节标题：早晨咖啡、城市漫步、日落休闲。\"}"
+        }
+      }
+    ]
+  },
+  "finish_reason": "tool_calls",
+  "usage": {
+    "prompt_tokens": 7224,
+    "completion_tokens": 213,
+    "total_tokens": 7437,
+    "prompt_tokens_details": {
+      "cached_tokens": 7040
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 105
+    },
+    "prompt_cache_hit_tokens": 7040,
+    "prompt_cache_miss_tokens": 184
+  }
+}

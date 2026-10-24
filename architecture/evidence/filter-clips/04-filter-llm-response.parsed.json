@@ -1,0 +1,23 @@
+{
+  "id": "0de8a1a5-63b1-4d6a-bed0-0916142a2ef8",
+  "model": "deepseek-flash",
+  "message": {
+    "role": "assistant",
+    "reasoning_content": "用户要求保留全部片段，不要丢弃任何素材。总数是3个，少于等于5个，禁止删除任何片段，必须全部保留。\n\n输出JSON。",
+    "content": "```json\n{\n  \"results\": [\n    {\"clip_id\": \"clip_0001\", \"keep\": true},\n    {\"clip_id\": \"clip_0002\", \"keep\": true},\n    {\"clip_id\": \"clip_0003\", \"keep\": true}\n  ]\n}\n```"
+  },
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 735,
+    "completion_tokens": 95,
+    "total_tokens": 830,
+    "prompt_tokens_details": {
+      "cached_tokens": 256
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 33
+    },
+    "prompt_cache_hit_tokens": 256,
+    "prompt_cache_miss_tokens": 479
+  }
+}

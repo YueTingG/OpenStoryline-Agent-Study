@@ -1,0 +1,33 @@
+{
+  "id": "14f03768-6494-48d6-bec9-8ffe828e52fc",
+  "model": "deepseek-flash",
+  "message": {
+    "role": "assistant",
+    "reasoning_content": "All 3 kept. Now group clips. Arrange in logical order Morning coffee -> City walk -> Sunset chill.",
+    "content": "3 个片段全部保留。接下来按「早晨咖啡 → 城市漫步 → 日落休闲」的顺序做分组排序。",
+    "tool_calls": [
+      {
+        "id": "call_00_AFFMMX8bMIGkZJtf9bBn3677",
+        "type": "function",
+        "function": {
+          "name": "storyline_group_clips",
+          "arguments": "{\"mode\": \"auto\", \"user_request\": \"按一天的时间顺序排列：早晨咖啡 → 城市漫步 → 日落休闲。\"}"
+        }
+      }
+    ]
+  },
+  "finish_reason": "tool_calls",
+  "usage": {
+    "prompt_tokens": 6997,
+    "completion_tokens": 120,
+    "total_tokens": 7117,
+    "prompt_tokens_details": {
+      "cached_tokens": 6784
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 22
+    },
+    "prompt_cache_hit_tokens": 6784,
+    "prompt_cache_miss_tokens": 213
+  }
+}
