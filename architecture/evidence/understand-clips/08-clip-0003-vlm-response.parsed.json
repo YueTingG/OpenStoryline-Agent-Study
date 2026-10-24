@@ -1,0 +1,23 @@
+{
+  "id": "ee795f6e-7bd0-488a-af31-2c615743acbc",
+  "model": "deepseek-flash",
+  "message": {
+    "role": "assistant",
+    "reasoning_content": "The video shows a static title card with \"Sunset_chill\" text, split background of dark blue-gray top and orange bottom. No actual footage. Caption should describe this. Aes score: it's a simple graphic, clean, no noise, but not really a video/photographic quality. Score around 0.45-0.55. Let's say 0.50.",
+    "content": "{\n  \"caption\": \"视频片段为静态标题画面，无实拍人物或场景。画面由上下两色块横向分割构成：上部为深灰蓝色，下部为橙红色。中央居中显示白色无衬线文字“Sunset_chill”。镜头固定无运动，无场景切换，整体呈极简平面设计风格，情绪平静冷淡。\",\n  \"aes_score\": 0.50\n}"
+  },
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 2037,
+    "completion_tokens": 171,
+    "total_tokens": 2208,
+    "prompt_tokens_details": {
+      "cached_tokens": 1792
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 81
+    },
+    "prompt_cache_hit_tokens": 1792,
+    "prompt_cache_miss_tokens": 245
+  }
+}

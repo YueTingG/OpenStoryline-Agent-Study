@@ -1,0 +1,23 @@
+{
+  "id": "e794f17b-7cc2-4290-9d60-03278fa47f59",
+  "model": "deepseek-flash",
+  "message": {
+    "role": "assistant",
+    "reasoning_content": "The video segment shows a static title card: yellow/amber background with a thin light-colored rectangular border frame, and white text \"Morning_coffee\" centered. No people, no action. It's a graphic title card.\n\nCaption within 100 characters (Chinese chars). Let's write: \"视频为纯色标题卡画面：明黄色背景上有一个浅色细线矩形边框，中央居中显示白色无衬线英文字样“Morning_coffee”，无人物与动作，画面全程静止无变化，属于Vlog片头字幕，情绪简洁明快。\"\n\nCount characters ~ that's about 90. Good.\n\nAes score: it's a simple graphic card, clean, no noise, but not visually rich. Composition centered, stable. Maybe 0.55-0.65. It's a plain title card —清晰、曝光正常、色彩统一，构图居中，但内容单薄、细节少。I'd give 0.58.",
+    "content": "{\n  \"caption\": \"纯色标题卡画面：明黄色背景上绘有一个浅色细线矩形边框，中央居中显示白色无衬线英文字样“Morning_coffee”。画面无人物、无动作与表情，全程静止无变化，属Vlog片头字幕卡，整体风格简洁明快。\",\n  \"aes_score\": 0.58\n}"
+  },
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 2037,
+    "completion_tokens": 280,
+    "total_tokens": 2317,
+    "prompt_tokens_details": {
+      "cached_tokens": 1792
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 198
+    },
+    "prompt_cache_hit_tokens": 1792,
+    "prompt_cache_miss_tokens": 245
+  }
+}

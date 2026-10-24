@@ -1,0 +1,33 @@
+{
+  "id": "d76a4039-5938-4d1b-a0dd-031b0837e7b9",
+  "model": "deepseek-flash",
+  "message": {
+    "role": "assistant",
+    "reasoning_content": "These are title cards. Now filter clips. Since it's a test video with all 3 clips, filter maybe auto. Actually the user wants a 5-second test video using their material. Let's keep all clips. Let me run filter_clips with auto, requesting to keep all? Actually filter default filters based on requirements. Given it's a test, maybe skip? But we want all materials. Hmm, the user said \"基于我上传的这个素材\" - use this material. I'll run filter with a request to keep all clips.\n\nActually filter_clips might drop clips. For a test video of 5 seconds, keeping all 3 clips is fine. Let me set user_request to keep all clips.\n\nLet me run filter_clips.",
+    "content": "这三个片段其实是三张标题卡：「Morning_coffee」「City_walk」「Sunset_chill」，像一组极简 Vlog 章节片头。我保留全部片段，不做删减。",
+    "tool_calls": [
+      {
+        "id": "call_00_Wzc7NWrTYJ9jTGuVjYDy5758",
+        "type": "function",
+        "function": {
+          "name": "storyline_filter_clips",
+          "arguments": "{\"mode\": \"auto\", \"user_request\": \"这是测试视频，保留全部片段，不要丢弃任何素材。\"}"
+        }
+      }
+    ]
+  },
+  "finish_reason": "tool_calls",
+  "usage": {
+    "prompt_tokens": 6630,
+    "completion_tokens": 263,
+    "total_tokens": 6893,
+    "prompt_tokens_details": {
+      "cached_tokens": 6272
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 154
+    },
+    "prompt_cache_hit_tokens": 6272,
+    "prompt_cache_miss_tokens": 358
+  }
+}

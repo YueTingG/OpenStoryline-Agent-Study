@@ -451,6 +451,25 @@ OpenStoryline 把片段包装成 clips JSON，并保存成 split_shots artifact�
 
 ---
 
+### 7.4 understand_clips 详细流程
+
+`understand_clips` 的完整说明见：
+
+```text
+architecture/understand-clips-flow.md
+```
+
+核心结论：
+
+```text
+understand_clips 读取 load_media 和 split_shots 的结果；
+对每个 clip 分别调用视觉模型，生成 caption 和 aes_score；
+再调用一次文本模型生成全部 clips 的 overall 描述；
+结果保存为 understand_clips artifact，并将执行摘要返回 Agent LLM。
+```
+
+---
+
 ## 8. 为什么二次编辑能复用结果
 
 核心原因是：每个工具节点的输出都会被保存成 artifact。
