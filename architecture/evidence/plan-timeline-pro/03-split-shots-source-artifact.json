@@ -1,0 +1,52 @@
+{
+  "payload": {
+    "clips": [
+      {
+        "clip_id": "clip_0001",
+        "kind": "video",
+        "fps": 25.0,
+        "source_ref": {
+          "media_id": "media_0001",
+          "start": 0,
+          "end": 5000,
+          "duration": 5000,
+          "height": 720,
+          "width": 1280
+        },
+        "path": "/app/outputs/e78297ae266440caac2cac2dc5575c51/media/media_0001.mp4"
+      },
+      {
+        "clip_id": "clip_0002",
+        "kind": "video",
+        "fps": 30.0,
+        "source_ref": {
+          "media_id": "media_0002",
+          "start": 0,
+          "end": 5000,
+          "duration": 5000,
+          "height": 720,
+          "width": 1280
+        },
+        "path": "/app/outputs/e78297ae266440caac2cac2dc5575c51/media/media_0002.mp4"
+      },
+      {
+        "clip_id": "clip_0003",
+        "kind": "video",
+        "fps": 25.0,
+        "source_ref": {
+          "media_id": "media_0003",
+          "start": 0,
+          "end": 5000,
+          "duration": 5000,
+          "height": 720,
+          "width": 1280
+        },
+        "path": "/app/outputs/e78297ae266440caac2cac2dc5575c51/media/media_0003.mp4"
+      }
+    ]
+  },
+  "session_id": "e78297ae266440caac2cac2dc5575c51",
+  "artifact_id": "split_shots_1789240961.7285173",
+  "node_id": "split_shots",
+  "create_time": 1789240963.6247847
+}

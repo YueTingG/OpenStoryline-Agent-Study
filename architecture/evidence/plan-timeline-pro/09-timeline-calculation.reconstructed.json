@@ -1,0 +1,40 @@
+{
+  "original_clip_durations_ms": [
+    5000,
+    5000,
+    5000
+  ],
+  "estimated_group_text_duration_ms": 5000,
+  "minimum_duration_per_clip_ms": 1650,
+  "selected_bgm_beat_boundaries_ms": [
+    0,
+    3065,
+    6780,
+    11053
+  ],
+  "new_clip_durations_ms": [
+    3065,
+    3715,
+    4273
+  ],
+  "playback_rates": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "final_video_duration_ms": 11053,
+  "subtitle_durations_ms": [
+    3203,
+    480,
+    2883,
+    640,
+    2402,
+    1441
+  ],
+  "subtitle_total_ms_after_integer_rounding": 11049,
+  "voiceover_count": 0,
+  "bgm_source_window_ms": [
+    0,
+    11053
+  ]
+}

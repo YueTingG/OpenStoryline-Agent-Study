@@ -1,0 +1,151 @@
+{
+  "payload": {
+    "tracks": {
+      "video": [
+        {
+          "clip_id": "clip_0001",
+          "group_id": "group_0001",
+          "kind": "video",
+          "fps": 25.0,
+          "size": [
+            1280,
+            720
+          ],
+          "source_path": "/app/outputs/e78297ae266440caac2cac2dc5575c51/media/media_0001.mp4",
+          "source_window": {
+            "start": 0,
+            "end": 3065,
+            "duration": 3065
+          },
+          "timeline_window": {
+            "start": 0,
+            "end": 3065,
+            "duration": 3065
+          },
+          "playback_rate": 1.0
+        },
+        {
+          "clip_id": "clip_0002",
+          "group_id": "group_0001",
+          "kind": "video",
+          "fps": 30.0,
+          "size": [
+            1280,
+            720
+          ],
+          "source_path": "/app/outputs/e78297ae266440caac2cac2dc5575c51/media/media_0002.mp4",
+          "source_window": {
+            "start": 0,
+            "end": 3715,
+            "duration": 3715
+          },
+          "timeline_window": {
+            "start": 3065,
+            "end": 6780,
+            "duration": 3715
+          },
+          "playback_rate": 1.0
+        },
+        {
+          "clip_id": "clip_0003",
+          "group_id": "group_0001",
+          "kind": "video",
+          "fps": 25.0,
+          "size": [
+            1280,
+            720
+          ],
+          "source_path": "/app/outputs/e78297ae266440caac2cac2dc5575c51/media/media_0003.mp4",
+          "source_window": {
+            "start": 0,
+            "end": 4273,
+            "duration": 4273
+          },
+          "timeline_window": {
+            "start": 6780,
+            "end": 11053,
+            "duration": 4273
+          },
+          "playback_rate": 1.0
+        }
+      ],
+      "subtitles": [
+        {
+          "group_id": "group_0001",
+          "unit_id": "subtitle_0001",
+          "index_in_group": 0,
+          "text": "早上先来杯 Morning_coffee",
+          "timeline_window": {
+            "start": 0,
+            "end": 3203
+          }
+        },
+        {
+          "group_id": "group_0001",
+          "unit_id": "subtitle_0002",
+          "index_in_group": 1,
+          "text": "醒醒神",
+          "timeline_window": {
+            "start": 3203,
+            "end": 3683
+          }
+        },
+        {
+          "group_id": "group_0001",
+          "unit_id": "subtitle_0003",
+          "index_in_group": 2,
+          "text": "然后 City_walk 出门晃一圈",
+          "timeline_window": {
+            "start": 3683,
+            "end": 6566
+          }
+        },
+        {
+          "group_id": "group_0001",
+          "unit_id": "subtitle_0004",
+          "index_in_group": 3,
+          "text": "随便走走",
+          "timeline_window": {
+            "start": 6566,
+            "end": 7206
+          }
+        },
+        {
+          "group_id": "group_0001",
+          "unit_id": "subtitle_0005",
+          "index_in_group": 4,
+          "text": "到了 Sunset_chill",
+          "timeline_window": {
+            "start": 7206,
+            "end": 9608
+          }
+        },
+        {
+          "group_id": "group_0001",
+          "unit_id": "subtitle_0006",
+          "index_in_group": 5,
+          "text": "就坐着看天慢慢变橙",
+          "timeline_window": {
+            "start": 9608,
+            "end": 11049
+          }
+        }
+      ],
+      "voiceover": [],
+      "bgm": [
+        {
+          "bgm_id": "3f18ae606a55ad29899bcf5e1f0226fe",
+          "source_window": {
+            "start": 0,
+            "end": 11053
+          },
+          "path": "/app/resource/bgms/music_0031.mp3"
+        }
+      ]
+    }
+  },
+  "session_id": "e78297ae266440caac2cac2dc5575c51",
+  "artifact_id": "plan_timeline_pro_1789241019.933336",
+  "node_id": "plan_timeline_pro",
+  "create_time": 1789241020.0107098
+}

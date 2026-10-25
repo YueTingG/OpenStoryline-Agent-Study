@@ -1,0 +1,60 @@
+{
+  "mode": "skip",
+  "artifact_id": "generate_voiceover_1789240998.1452188",
+  "lang": "zh",
+  "group_clips": {
+    "groups": [
+      {
+        "group_id": "group_0001",
+        "summary": "以一天时间线串联三张极简标题卡：早晨咖啡、城市漫步、日落休闲，形成从清晨到黄昏的完整情绪推进。",
+        "clip_ids": [
+          "clip_0001",
+          "clip_0002",
+          "clip_0003"
+        ],
+        "duration": "15.0s"
+      }
+    ]
+  },
+  "generate_script": {
+    "group_scripts": [
+      {
+        "group_id": "group_0001",
+        "raw_text": "早上先来杯 Morning_coffee，醒醒神。然后 City_walk 出门晃一圈，随便走走。到了 Sunset_chill，就坐着看天慢慢变橙。",
+        "subtitle_units": [
+          {
+            "unit_id": "subtitle_0001",
+            "index_in_group": 0,
+            "text": "早上先来杯 Morning_coffee"
+          },
+          {
+            "unit_id": "subtitle_0002",
+            "index_in_group": 1,
+            "text": "醒醒神"
+          },
+          {
+            "unit_id": "subtitle_0003",
+            "index_in_group": 2,
+            "text": "然后 City_walk 出门晃一圈"
+          },
+          {
+            "unit_id": "subtitle_0004",
+            "index_in_group": 3,
+            "text": "随便走走"
+          },
+          {
+            "unit_id": "subtitle_0005",
+            "index_in_group": 4,
+            "text": "到了 Sunset_chill"
+          },
+          {
+            "unit_id": "subtitle_0006",
+            "index_in_group": 5,
+            "text": "就坐着看天慢慢变橙"
+          }
+        ]
+      }
+    ],
+    "title": "从早咖啡晃到日落时分"
+  }
+}

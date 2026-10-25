@@ -569,6 +569,63 @@ mode=auto 时固定生成整条成片开头的 fade_in 和结尾的 fade_out；
 
 ---
 
+### 7.10 generate_voiceover 详细流程
+
+`generate_voiceover` 的完整说明见：
+
+```text
+architecture/09-generate-voiceover-flow.md
+```
+
+核心结论：
+
+```text
+Agent LLM 根据用户是否需要配音，选择 auto、skip 或 default；
+后端会补入 generate_script 和 group_clips 的已有结果；
+auto 模式读取每个 group 的 raw_text，通过 TTS 服务生成 WAV；
+本次用户明确要求不要配音，因此 mode=skip，最终保存 voiceover=[]。
+```
+
+---
+
+### 7.11 select_bgm 详细流程
+
+`select_bgm` 的完整说明见：
+
+```text
+architecture/10-select-bgm-flow.md
+```
+
+核心结论：
+
+```text
+Agent LLM 给出局部音乐要求，select_bgm 不直接读取视频或前序 artifact；
+节点先从项目自带的本地曲库中向量召回候选，再由内部 LLM 选择一首；
+选中后程序实际读取 MP3，计算时长、BPM、重拍和能量数据；
+这些结果保存成 music_rec artifact，供 plan_timeline_pro 使用。
+```
+
+---
+
+### 7.12 plan_timeline_pro 详细流程
+
+`plan_timeline_pro` 的完整说明见：
+
+```text
+architecture/11-plan-timeline-pro-flow.md
+```
+
+核心结论：
+
+```text
+后端自动补入 split_shots、group_clips、generate_script、tts 和 music_rec；
+节点不调用 LLM，而是用程序规则生成 video、subtitles、voiceover、bgm 四条轨道；
+本次 use_beats=true，三个 5 秒片段被按 BGM 重拍裁成 3065ms、3715ms、4273ms；
+最终时间线是 11.053 秒，没有实现原始用户要求的 5 秒总时长。
+```
+
+---
+
 ## 8. 为什么二次编辑能复用结果
 
 核心原因是：每个工具节点的输出都会被保存成 artifact。

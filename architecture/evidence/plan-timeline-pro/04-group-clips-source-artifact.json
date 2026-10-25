@@ -1,0 +1,20 @@
+{
+  "payload": {
+    "groups": [
+      {
+        "group_id": "group_0001",
+        "summary": "以一天时间线串联三张极简标题卡：早晨咖啡、城市漫步、日落休闲，形成从清晨到黄昏的完整情绪推进。",
+        "clip_ids": [
+          "clip_0001",
+          "clip_0002",
+          "clip_0003"
+        ],
+        "duration": "15.0s"
+      }
+    ]
+  },
+  "session_id": "e78297ae266440caac2cac2dc5575c51",
+  "artifact_id": "group_clips_1789240983.9655333",
+  "node_id": "group_clips",
+  "create_time": 1789240987.5336463
+}

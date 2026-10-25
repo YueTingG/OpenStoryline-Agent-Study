@@ -1,0 +1,33 @@
+{
+  "id": "2cac543a-0d70-4713-ab40-590f697958b6",
+  "model": "deepseek-flash",
+  "message": {
+    "role": "assistant",
+    "reasoning_content": "Correct tool name is storyline_select_bgm.",
+    "content": null,
+    "tool_calls": [
+      {
+        "id": "call_00_18L4EUcfarynJpL7OG9S9883",
+        "type": "function",
+        "function": {
+          "name": "storyline_select_bgm",
+          "arguments": "{\"mode\": \"auto\", \"user_request\": \"轻松、治愈的 Vlog 背景音乐，节奏舒缓。\"}"
+        }
+      }
+    ]
+  },
+  "finish_reason": "tool_calls",
+  "usage": {
+    "prompt_tokens": 8444,
+    "completion_tokens": 78,
+    "total_tokens": 8522,
+    "prompt_tokens_details": {
+      "cached_tokens": 8192
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 9
+    },
+    "prompt_cache_hit_tokens": 8192,
+    "prompt_cache_miss_tokens": 252
+  }
+}

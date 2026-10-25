@@ -1,0 +1,33 @@
+{
+  "id": "9fc09659-05f7-404a-843f-b6d1d9e29c5a",
+  "model": "deepseek-flash",
+  "message": {
+    "role": "assistant",
+    "reasoning_content": "Now plan_timeline. 5 second video. The timeline tool will arrange. Let me call plan_timeline_pro with mode auto. \n\nShould I try to make it 5 seconds? The tool doesn't have a duration param except image_duration_ms for AI transition. These are videos. There's no total duration control. Let me just run auto mode.\n\nActually, maybe I should read the script node to check. Not necessary.\n\nLet me call plan_timeline_pro.",
+    "content": "背景音乐选好了。接下来组织时间线。",
+    "tool_calls": [
+      {
+        "id": "call_00_j9Sc6YToszK0KXnmGFly8642",
+        "type": "function",
+        "function": {
+          "name": "storyline_plan_timeline_pro",
+          "arguments": "{\"mode\": \"auto\"}"
+        }
+      }
+    ]
+  },
+  "finish_reason": "tool_calls",
+  "usage": {
+    "prompt_tokens": 8636,
+    "completion_tokens": 152,
+    "total_tokens": 8788,
+    "prompt_tokens_details": {
+      "cached_tokens": 8448
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 99
+    },
+    "prompt_cache_hit_tokens": 8448,
+    "prompt_cache_miss_tokens": 188
+  }
+}

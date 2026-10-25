@@ -1,0 +1,15 @@
+{
+  "role": "assistant",
+  "reasoning_content": "",
+  "content": "配音已跳过。接下来挑一首轻松的背景音乐。",
+  "tool_calls": [
+    {
+      "id": "call_00_ET_3UMYX3mXWX4vZqFCQ3ui2682",
+      "type": "function",
+      "function": {
+        "name": "storyline_select_BGM",
+        "arguments": "{\"mode\": \"auto\", \"user_request\": \"轻松、治愈的 Vlog 背景音乐，节奏舒缓。\"}"
+      }
+    }
+  ]
+}
