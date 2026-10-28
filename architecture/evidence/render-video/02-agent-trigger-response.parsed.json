@@ -1,0 +1,33 @@
+{
+  "id": "338c696f-de4b-467f-8aa8-8bdfb4b6451b",
+  "model": "deepseek-flash",
+  "message": {
+    "role": "assistant",
+    "reasoning_content": "Now render video. Let me render. aspect ratio? Leave auto. Output dimension maybe 1080.\n\nLet me render.",
+    "content": "时间线已组织好。最后一步，渲染成片。",
+    "tool_calls": [
+      {
+        "id": "call_00_O3EyyrcJJyurjggoZwn61660",
+        "type": "function",
+        "function": {
+          "name": "storyline_render_video",
+          "arguments": "{\"mode\": \"auto\"}"
+        }
+      }
+    ]
+  },
+  "finish_reason": "tool_calls",
+  "usage": {
+    "prompt_tokens": 8899,
+    "completion_tokens": 79,
+    "total_tokens": 8978,
+    "prompt_tokens_details": {
+      "cached_tokens": 8704
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 25
+    },
+    "prompt_cache_hit_tokens": 8704,
+    "prompt_cache_miss_tokens": 195
+  }
+}

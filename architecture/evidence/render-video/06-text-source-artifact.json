@@ -1,0 +1,23 @@
+{
+  "payload": [
+    {
+      "style": "现代、加粗",
+      "class": "黑体",
+      "lang": [
+        "zh",
+        "en"
+      ],
+      "font_name": "SourceHanSansSC",
+      "font_color": [
+        255,
+        255,
+        255,
+        255
+      ]
+    }
+  ],
+  "session_id": "e78297ae266440caac2cac2dc5575c51",
+  "artifact_id": "elementrec_text_1789240993.1517227",
+  "node_id": "elementrec_text",
+  "create_time": 1789240995.997949
+}

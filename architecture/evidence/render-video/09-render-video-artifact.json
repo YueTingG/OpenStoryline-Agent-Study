@@ -1,0 +1,15 @@
+{
+  "payload": {
+    "output_path": "/app/.storyline/.server_cache/e78297ae266440caac2cac2dc5575c51/render_video_1789241021.2011614/output_f60a792d_1789241021264.mp4",
+    "output_basename": "output_f60a792d_1789241021264.mp4",
+    "duration_s": 11.053,
+    "output_size": {
+      "width": 1080,
+      "height": 608
+    }
+  },
+  "session_id": "e78297ae266440caac2cac2dc5575c51",
+  "artifact_id": "render_video_1789241021.2011614",
+  "node_id": "render_video",
+  "create_time": 1789241036.4077234
+}

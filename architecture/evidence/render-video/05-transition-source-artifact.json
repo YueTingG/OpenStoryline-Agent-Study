@@ -1,0 +1,18 @@
+{
+  "payload": [
+    {
+      "type": "fade_in",
+      "position": "opening",
+      "duration": 500
+    },
+    {
+      "type": "fade_out",
+      "position": "ending",
+      "duration": 500
+    }
+  ],
+  "session_id": "e78297ae266440caac2cac2dc5575c51",
+  "artifact_id": "elementrec_transition_1789240996.9224887",
+  "node_id": "elementrec_transition",
+  "create_time": 1789240996.9579668
+}

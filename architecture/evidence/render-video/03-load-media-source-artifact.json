@@ -1,0 +1,49 @@
+{
+  "payload": {
+    "media": [
+      {
+        "media_id": "media_0001",
+        "media_type": "video",
+        "metadata": {
+          "duration": 5000,
+          "width": 1280,
+          "height": 720,
+          "fps": 25.0,
+          "has_audio": true,
+          "audio_sample_rate_hz": 44100
+        },
+        "path": "/app/outputs/e78297ae266440caac2cac2dc5575c51/media/media_0001.mp4"
+      },
+      {
+        "media_id": "media_0002",
+        "media_type": "video",
+        "metadata": {
+          "duration": 5000,
+          "width": 1280,
+          "height": 720,
+          "fps": 30.0,
+          "has_audio": true,
+          "audio_sample_rate_hz": 44100
+        },
+        "path": "/app/outputs/e78297ae266440caac2cac2dc5575c51/media/media_0002.mp4"
+      },
+      {
+        "media_id": "media_0003",
+        "media_type": "video",
+        "metadata": {
+          "duration": 5000,
+          "width": 1280,
+          "height": 720,
+          "fps": 25.0,
+          "has_audio": true,
+          "audio_sample_rate_hz": 44100
+        },
+        "path": "/app/outputs/e78297ae266440caac2cac2dc5575c51/media/media_0003.mp4"
+      }
+    ]
+  },
+  "session_id": "e78297ae266440caac2cac2dc5575c51",
+  "artifact_id": "load_media_1789240960.4566667",
+  "node_id": "load_media",
+  "create_time": 1789240960.7579737
+}

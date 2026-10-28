@@ -626,6 +626,25 @@ architecture/11-plan-timeline-pro-flow.md
 
 ---
 
+### 7.13 render_video 详细流程
+
+`render_video` 的完整说明见：
+
+```text
+architecture/12-render-video-flow.md
+```
+
+核心结论：
+
+```text
+后端自动补入 load_media、plan_timeline、transition_rec 和 text_rec；
+节点不调用 LLM，而是用 MoviePy、Pillow 和 FFmpeg 真正合成视频；
+本次输出包含三个正常速度裁剪片段、六条字幕、BGM 和整条画面的首尾淡入淡出；
+素材原声与配音均未混入，最终生成 1080×608、30fps、11.053 秒的 MP4。
+```
+
+---
+
 ## 8. 为什么二次编辑能复用结果
 
 核心原因是：每个工具节点的输出都会被保存成 artifact。

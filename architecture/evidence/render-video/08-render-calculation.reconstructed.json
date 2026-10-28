@@ -1,0 +1,85 @@
+{
+  "final_duration_s": 11.053,
+  "duration_source": "max(video.timeline_window.end)=11053ms",
+  "canvas": {
+    "aspect_ratio_source": "dominant input video ratio 16:9",
+    "max_dimension_px": 1080,
+    "output_width": 1080,
+    "output_height": 608
+  },
+  "output_fps": 30,
+  "video": {
+    "segments": 3,
+    "compose_mode": "padding",
+    "playback_rates": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "source_windows_ms": [
+      [
+        0,
+        3065
+      ],
+      [
+        0,
+        3715
+      ],
+      [
+        0,
+        4273
+      ]
+    ]
+  },
+  "subtitles": {
+    "count": 6,
+    "font_name": "SourceHanSansSC",
+    "font_path": "resource/fonts/SourceHanSansSC/SourceHanSansSC-Bold.otf",
+    "requested_font_size": 40,
+    "rendered_font_size_after_canvas_scaling_and_clamp": 28,
+    "requested_margin_bottom": 270,
+    "rendered_margin_bottom": 152,
+    "requested_stroke_width": 2,
+    "rendered_stroke_width": 1,
+    "font_color": [
+      255,
+      255,
+      255,
+      255
+    ],
+    "stroke_color": [
+      0,
+      0,
+      0,
+      255
+    ]
+  },
+  "transitions": [
+    {
+      "type": "fade_in",
+      "position": "opening",
+      "duration_ms": 500
+    },
+    {
+      "type": "fade_out",
+      "position": "ending",
+      "duration_ms": 500
+    }
+  ],
+  "audio": {
+    "include_original_video_audio": false,
+    "voiceover_segments": 0,
+    "bgm_path": "/app/resource/bgms/music_0031.mp3",
+    "bgm_source_window_ms": [
+      0,
+      11053
+    ],
+    "bgm_volume_scale": 0.25
+  },
+  "encoding": {
+    "video_codec": "libx264",
+    "audio_codec": "aac",
+    "preset": "veryfast",
+    "crf": 23
+  }
+}
